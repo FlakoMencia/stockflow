@@ -8,10 +8,10 @@ spring:
     password:
     driver-class-name: org.h2.Driver
     hikari:
-      pool-name: StockFlowHikariPool
-      maximum-pool-size: 10
-      minimum-idle: 2
-      connection-timeout: 30000
+      maximum-pool-size: 10      # Enough for a medium-load demo application.
+      minimum-idle: 5            # Keeps a few ready connections available.
+      connection-timeout: 30000  # Wait up to 30s for a connection.
+      idle-timeout: 600000       # Close idle connections after 10 minutes.
 
   h2:
     console:
@@ -45,3 +45,27 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      stockAlerts:
+        sliding-window-type: count_based
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 3
+  retry:
+    instances:
+      movementRegistration:
+        max-attempts: 3
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+  ratelimiter:
+    instances:
+      movementHistory:
+        limit-for-period: 10
+        limit-refresh-period: 1s
+        timeout-duration: 0

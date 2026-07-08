@@ -11,6 +11,8 @@ import com.stockflow.inventory.mapper.MovementMapper;
 import com.stockflow.inventory.repository.MovementRepository;
 import com.stockflow.inventory.repository.ProductRepository;
 import com.stockflow.inventory.service.MovementService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ public class MovementServiceImpl implements MovementService {
 
     @Override
     @Transactional
+    @Retry(name = "movementRegistration")
     public MovementResponse registerMovement(MovementRequest request) {
         validateRequest(request);
         validateQuantity(request.quantity());
@@ -63,6 +66,7 @@ public class MovementServiceImpl implements MovementService {
 
     @Override
     @Transactional(readOnly = true)
+    @RateLimiter(name = "movementHistory")
     public Page<MovementResponse> getMovementHistory(Long productId, Pageable pageable) {
         if (!productRepository.existsById(productId)) {
             throw new ProductNotFoundException(productId);
