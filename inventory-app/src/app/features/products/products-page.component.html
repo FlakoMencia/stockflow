@@ -1,0 +1,87 @@
+<section class="products">
+  <header class="products__header">
+    <div>
+      <h1>Products</h1>
+      <p>Browse inventory by category and page through the list.</p>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="store.loadProducts(currentPage, pageSize, store.activeCategoryFilter() ?? undefined)">
+      Refresh
+    </button>
+  </header>
+
+  <section class="filter-bar" aria-label="Category filter">
+    <label class="filter-bar__field">
+      <span>Category</span>
+      <input
+        type="text"
+        [value]="categoryDraft"
+        (input)="onCategoryDraftChange($event)"
+        placeholder="Electronics, Furniture, Office Supplies"
+      />
+    </label>
+
+    <div class="filter-bar__actions">
+      <button type="button" class="secondary-button" (click)="applyCategoryFilter()">Apply filter</button>
+      <button type="button" class="secondary-button" (click)="clearCategoryFilter()">Clear</button>
+    </div>
+  </section>
+
+  <div class="state state--loading" *ngIf="store.loading()">
+    Loading products...
+  </div>
+
+  <div class="state state--error" *ngIf="store.activeError() as error">
+    <strong>{{ error.error }}</strong>
+    <span>{{ error.message }}</span>
+  </div>
+
+  <div class="state state--empty" *ngIf="!store.loading() && !store.activeError() && store.products().length === 0">
+    No products found for the current filter.
+  </div>
+
+  <div class="table-wrap" *ngIf="store.products().length > 0">
+    <table class="products-table">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Current stock</th>
+          <th>Minimum stock</th>
+          <th>Unit price</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let product of store.products()">
+          <td>{{ product.sku }}</td>
+          <td>
+            <strong>{{ product.name }}</strong>
+          </td>
+          <td>{{ product.category }}</td>
+          <td>{{ product.currentStock }}</td>
+          <td>{{ product.minimumStock }}</td>
+          <td>{{ product.unitPrice | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td>
+            <span
+              class="badge"
+              [class.badge--critical]="stockStatus(product) === 'CRITICAL'"
+              [class.badge--low]="stockStatus(product) === 'LOW'"
+              [class.badge--ok]="stockStatus(product) === 'OK'"
+            >
+              {{ stockStatus(product) }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="pager">
+    <button type="button" class="secondary-button" (click)="previousPage()" [disabled]="!canGoPrevious">Previous</button>
+    <span>Page {{ currentPageLabel }}</span>
+    <button type="button" class="secondary-button" (click)="nextPage()" [disabled]="!canGoNext">Next</button>
+  </footer>
+</section>

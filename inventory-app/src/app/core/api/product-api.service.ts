@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { PageResponse } from '../models/page-response.model';
 import { Product } from '../models/product.model';
 
@@ -9,7 +10,7 @@ import { Product } from '../models/product.model';
 })
 export class ProductApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/v1';
+  private readonly baseUrl = environment.apiUrl;
 
   getProducts(page: number, size: number, category?: string): Observable<PageResponse<Product>> {
     let params = new HttpParams().set('page', page).set('size', size);

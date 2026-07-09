@@ -1,0 +1,68 @@
+<section class="dashboard">
+  <header class="dashboard__header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Vista rapida del Inventario</p>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="store.loadProducts(); store.loadAlerts()">
+      Refrezcar
+    </button>
+  </header>
+
+  <div class="state state--loading" *ngIf="store.loading()">
+    Cargando inventory...
+  </div>
+
+  <div class="state state--error" *ngIf="store.activeError() as error">
+    <strong>{{ error.error }}</strong>
+    <span>{{ error.message }}</span>
+  </div>
+
+  <section class="kpi-grid" aria-label="Inventory summary">
+    <article class="kpi-card">
+      <span>Total de procutos</span>
+      <strong>{{ store.totalProductsCount() }}</strong>
+    </article>
+
+    <article class="kpi-card">
+      <span>Alertas activas</span>
+      <strong>{{ store.activeAlerts().length }}</strong>
+    </article>
+
+    <article class="kpi-card">
+      <span>Alertas CRITICAS</span>
+      <strong>{{ store.criticalAlertsCount() }}</strong>
+    </article>
+
+    <article class="kpi-card">
+      <span>Total de inventario $$</span>
+      <strong>{{ store.totalInventoryValue() | currency:'USD':'symbol':'1.2-2' }}</strong>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel__header">
+      <h2>Productos</h2>
+      <span *ngIf="store.activeCategoryFilter() as category">Categoria: {{ category }}</span>
+    </div>
+
+    <p class="empty-state" *ngIf="!store.loading() && !store.activeError() && store.products().length === 0">
+      No hay productos disponibles.
+    </p>
+
+    <ul class="product-list" *ngIf="store.products().length > 0">
+      <li class="product-row" *ngFor="let product of store.products()">
+        <div>
+          <strong>{{ product.name }}</strong>
+          <span> - {{ product.sku }} | {{ product.category }}</span>
+        </div>
+
+        <div class="product-row__meta">
+          <span>Stock {{ product.currentStock }}</span>
+          <span>{{ product.unitPrice | currency:'USD':'symbol':'1.2-2' }}</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+</section>

@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { Movement } from '../models/movement.model';
 import { MovementRequest } from '../models/movement-request.model';
 
@@ -9,7 +10,7 @@ import { MovementRequest } from '../models/movement-request.model';
 })
 export class MovementApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = '/api/v1';
+  private readonly baseUrl = environment.apiUrl;
 
   registerMovement(request: MovementRequest): Observable<Movement> {
     return this.http.post<Movement>(`${this.baseUrl}/movements`, request);
