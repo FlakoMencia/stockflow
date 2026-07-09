@@ -2,10 +2,10 @@
   <header class="products__header">
     <div>
       <h1>Productos</h1>
-      <p> Para explorar inventario por categoría y la lista página por página.</p>
+      <p>Explora inventario por categoria y navega la lista pagina por pagina.</p>
     </div>
 
-    <button type="button" class="refresh-button" (click)="store.loadProducts(currentPage, pageSize, store.activeCategoryFilter() ?? undefined)">
+    <button type="button" class="refresh-button" (click)="refreshProducts()" [disabled]="store.loading()">
       Refrescar
     </button>
   </header>
@@ -13,16 +13,14 @@
   <section class="filter-bar" aria-label="Category filter">
     <label class="filter-bar__field">
       <span>Categoria</span>
-      <input
-        type="text"
-        [value]="categoryDraft"
-        (input)="onCategoryDraftChange($event)"
-        placeholder="Electronics, Furniture, Office Supplies"
-      />
+      <select [value]="store.activeCategoryFilter() ?? ''" (change)="onCategoryChange($event)">
+        <option value="">Todas las categorias</option>
+        <option *ngFor="let category of categoryOptions" [value]="category">{{ category }}</option>
+      </select>
     </label>
 
     <div class="filter-bar__actions">
-      <button type="button" class="secondary-button" (click)="applyCategoryFilter()">Aplicar filtro</button>
+      <button type="button" class="secondary-button" (click)="refreshProducts()">Actualizar</button>
       <button type="button" class="secondary-button" (click)="clearCategoryFilter()">Limpiar</button>
     </div>
   </section>
@@ -47,15 +45,16 @@
           <th>SKU</th>
           <th>Nombre</th>
           <th>Categoria</th>
-          <th>Stock Actual</th>
-          <th>Stock Minimo</th>
+          <th>Stock actual</th>
+          <th>Stock minimo</th>
           <th>Precio unitario</th>
           <th>Estado</th>
+          <th>Historial</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr *ngFor="let product of store.products()">
+        <tr *ngFor="let product of store.products()" class="product-row">
           <td>{{ product.sku }}</td>
           <td>
             <strong>{{ product.name }}</strong>
@@ -74,14 +73,57 @@
               {{ stockStatus(product) }}
             </span>
           </td>
+          <td>
+            <button type="button" class="link-button" (click)="selectProduct(product.id)">
+              Ver historial
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 
+  <div class="history-trigger">
+    <button type="button" #historyTrigger class="secondary-button">Ver historial del producto seleccionado</button>
+    <span *ngIf="store.selectedProduct() as selectedProduct">Producto seleccionado: {{ selectedProduct.name }}</span>
+  </div>
+
   <footer class="pager">
-    <button type="button" class="secondary-button" (click)="previousPage()" [disabled]="!canGoPrevious">Atras</button>
-    <span>Page {{ currentPageLabel }}</span>
+    <button type="button" class="secondary-button" (click)="previousPage()" [disabled]="!canGoPrevious">Anterior</button>
+    <span>Pagina {{ currentPageLabel }}</span>
     <button type="button" class="secondary-button" (click)="nextPage()" [disabled]="!canGoNext">Siguiente</button>
   </footer>
+
+  @defer (on interaction(historyTrigger)) {
+    <ng-container *ngIf="store.selectedProduct() as selectedProduct; else selectPrompt">
+      <app-product-history-panel
+        [productId]="selectedProduct.id"
+        [productSku]="selectedProduct.sku"
+        [productName]="selectedProduct.name"
+      />
+    </ng-container>
+  } @placeholder {
+    <section class="history-placeholder">
+      <div class="history-placeholder__skeleton history-placeholder__skeleton--title"></div>
+      <div class="history-placeholder__skeleton"></div>
+      <div class="history-placeholder__skeleton"></div>
+      <div class="history-placeholder__skeleton history-placeholder__skeleton--wide"></div>
+    </section>
+  } @loading {
+    <div class="history-status history-status--loading">
+      <div class="spinner"></div>
+      <span>Cargando historial de movimientos...</span>
+    </div>
+  } @error {
+    <div class="history-status history-status--error">
+      <strong>No se pudo cargar el historial.</strong>
+      <span>Intenta seleccionar otro producto o vuelve a intentarlo en unos segundos.</span>
+    </div>
+  }
+
+  <ng-template #selectPrompt>
+    <div class="history-status history-status--empty">
+      Selecciona un producto para ver su historial de movimientos.
+    </div>
+  </ng-template>
 </section>

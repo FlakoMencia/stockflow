@@ -1,0 +1,47 @@
+<section class="history-panel">
+  <header class="history-panel__header">
+    <div>
+      <h2>Historial de movimientos</h2>
+      <p *ngIf="productSku || productName">{{ productSku }} - {{ productName }}</p>
+    </div>
+  </header>
+
+  <div class="history-panel__loading" *ngIf="loading">
+    Cargando historial...
+  </div>
+
+  <div class="history-panel__error" *ngIf="errorMessage">
+    <strong>No se pudo cargar el historial.</strong>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <p class="history-panel__empty" *ngIf="!loading && !errorMessage && movements.length === 0">
+    No hay movimientos registrados para este producto.
+  </p>
+
+  <div class="history-panel__table-wrap" *ngIf="movements.length > 0">
+    <table class="history-panel__table">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Cantidad</th>
+          <th>Motivo</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let movement of movements; trackBy: trackByMovementId">
+          <td>
+            <span class="movement-type" [class.movement-type--in]="movement.type === 'IN'" [class.movement-type--out]="movement.type === 'OUT'">
+              {{ movement.type }}
+            </span>
+          </td>
+          <td>{{ movement.quantity }}</td>
+          <td>{{ movement.reason }}</td>
+          <td>{{ movement.occurredAt | date: 'medium' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

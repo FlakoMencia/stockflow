@@ -6,8 +6,10 @@ import { AlertApiService } from '../api/alert-api.service';
 import { ProductApiService } from '../api/product-api.service';
 import { AlertSeverity } from '../models/alert-severity.enum';
 import { ErrorResponse } from '../models/error-response.model';
+import { PageResponse } from '../models/page-response.model';
 import { Product } from '../models/product.model';
 import { StockAlert } from '../models/stock-alert.model';
+import { ToastService } from '../services/toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +17,13 @@ import { StockAlert } from '../models/stock-alert.model';
 export class InventoryStore {
   private readonly productApi = inject(ProductApiService);
   private readonly alertApi = inject(AlertApiService);
+  private readonly toastService = inject(ToastService);
   private readonly categoryFilterStorageKey = 'stockflow.inventory.categoryFilter';
   private alertsEffectInitialized = false;
+  private lastAlertToastCount: number | null = null;
 
   readonly products = signal<Product[]>([]);
+  readonly productsPage = signal<PageResponse<Product> | null>(null);
   readonly activeAlerts = signal<StockAlert[]>([]);
   readonly selectedProduct = signal<Product | null>(null);
   readonly loading = signal(false);
@@ -53,13 +58,25 @@ export class InventoryStore {
 
     effect(() => {
       const alerts = this.activeAlerts();
+      const currentCount = alerts.length;
 
       if (!this.alertsEffectInitialized) {
         this.alertsEffectInitialized = true;
+        this.lastAlertToastCount = currentCount;
         return;
       }
 
-      console.log('StockFlow alerts updated', alerts);
+      if (currentCount === 0) {
+        this.lastAlertToastCount = 0;
+        return;
+      }
+
+      if (this.lastAlertToastCount === currentCount) {
+        return;
+      }
+
+      this.lastAlertToastCount = currentCount;
+      this.toastService.warning(`Tienes ${currentCount} alertas activas de inventario.`);
     });
   }
 
@@ -83,6 +100,7 @@ export class InventoryStore {
         finalize(() => this.loading.set(false))
       )
       .subscribe((response) => {
+        this.productsPage.set(response);
         this.products.set(response.content);
       });
   }

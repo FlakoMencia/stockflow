@@ -65,4 +65,30 @@
       </li>
     </ul>
   </section>
+
+  <section class="advanced-stats-shell">
+    @defer (on viewport) {
+      <app-advanced-statistics />
+    } @placeholder {
+      <section class="advanced-stats-skeleton" aria-label="Estadisticas avanzadas en carga">
+        <div class="advanced-stats-skeleton__title"></div>
+        <div class="advanced-stats-skeleton__grid">
+          <div class="advanced-stats-skeleton__card"></div>
+          <div class="advanced-stats-skeleton__card"></div>
+          <div class="advanced-stats-skeleton__card advanced-stats-skeleton__card--wide"></div>
+          <div class="advanced-stats-skeleton__card"></div>
+        </div>
+      </section>
+    } @loading {
+      <div class="advanced-stats-status advanced-stats-status--loading">
+        <div class="spinner"></div>
+        <span>Cargando estadisticas avanzadas...</span>
+      </div>
+    } @error {
+      <div class="advanced-stats-status advanced-stats-status--error">
+        <strong>No pudimos cargar las estadisticas avanzadas.</strong>
+        <span>Intenta desplazarte de nuevo o recargar la pagina.</span>
+      </div>
+    }
+  </section>
 </section>

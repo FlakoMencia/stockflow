@@ -1,0 +1,19 @@
+<div class="toast-stack" *ngIf="toastService.toasts().length > 0" aria-live="polite" aria-label="Notifications">
+  <article
+    class="toast"
+    *ngFor="let toast of toastService.toasts(); trackBy: trackByToastId"
+    [class.toast--success]="toast.type === 'success'"
+    [class.toast--error]="toast.type === 'error'"
+    [class.toast--warning]="toast.type === 'warning'"
+    [class.toast--info]="toast.type === 'info'"
+  >
+    <div class="toast__content">
+      <strong class="toast__title">{{ toast.type | titlecase }}</strong>
+      <p class="toast__message">{{ toast.message }}</p>
+    </div>
+
+    <button type="button" class="toast__dismiss" (click)="toastService.dismiss(toast.id)" aria-label="Dismiss toast">
+      &times;
+    </button>
+  </article>
+</div>

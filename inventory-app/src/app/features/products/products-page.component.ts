@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { InventoryStore } from '../../core/store/inventory.store';
+import { ProductHistoryPanelComponent } from './product-history-panel.component';
 
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProductHistoryPanelComponent],
   templateUrl: './products-page.component.html',
   styleUrls: ['./products-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -13,30 +14,41 @@ import { InventoryStore } from '../../core/store/inventory.store';
 export class ProductsPageComponent implements OnInit {
   readonly pageSize = 10;
   readonly store = inject(InventoryStore);
+  readonly fallbackCategories = ['Electronics', 'Furniture', 'Office Supplies'] as const;
 
   currentPage = 0;
-  categoryDraft = '';
 
   ngOnInit(): void {
-    this.categoryDraft = this.store.activeCategoryFilter() ?? '';
-    this.store.loadProducts(this.currentPage, this.pageSize);
+    this.currentPage = this.store.productsPage()?.number ?? 0;
+    this.store.loadProducts(this.currentPage, this.pageSize, this.store.activeCategoryFilter() ?? undefined);
   }
 
-  onCategoryDraftChange(event: Event): void {
-    this.categoryDraft = (event.target as HTMLInputElement).value;
+  selectProduct(productId: number): void {
+    this.store.selectProduct(productId);
   }
 
-  applyCategoryFilter(): void {
-    const category = this.normalizeCategory(this.categoryDraft);
+  refreshProducts(): void {
+    this.store.loadProducts(this.currentPage, this.pageSize, this.store.activeCategoryFilter() ?? undefined);
+  }
+
+  get categoryOptions(): string[] {
+    const loadedCategories = this.store
+      .products()
+      .map((product) => product.category)
+      .filter((category): category is string => Boolean(category));
+    return Array.from(new Set([...loadedCategories, ...this.fallbackCategories]));
+  }
+
+  onCategoryChange(event: Event): void {
+    const rawCategory = (event.target as HTMLSelectElement).value;
+    const category = this.normalizeCategory(rawCategory);
     this.currentPage = 0;
-    this.categoryDraft = category ?? '';
     this.store.setCategoryFilter(category);
     this.store.loadProducts(this.currentPage, this.pageSize, category ?? undefined);
   }
 
   clearCategoryFilter(): void {
     this.currentPage = 0;
-    this.categoryDraft = '';
     this.store.setCategoryFilter(null);
     this.store.loadProducts(this.currentPage, this.pageSize);
   }
@@ -64,11 +76,16 @@ export class ProductsPageComponent implements OnInit {
   }
 
   get canGoNext(): boolean {
+    const lastPage = this.store.productsPage()?.last;
+    if (typeof lastPage === 'boolean') {
+      return !lastPage;
+    }
+
     return this.store.products().length === this.pageSize;
   }
 
   get currentPageLabel(): number {
-    return this.currentPage + 1;
+    return (this.store.productsPage()?.number ?? this.currentPage) + 1;
   }
 
   stockStatus(product: { currentStock: number; minimumStock: number }): 'CRITICAL' | 'LOW' | 'OK' {
@@ -83,8 +100,8 @@ export class ProductsPageComponent implements OnInit {
     return 'OK';
   }
 
-  private normalizeCategory(value: string): string | null {
-    const trimmed = value.trim();
+  private normalizeCategory(value: string | null): string | null {
+    const trimmed = value?.trim();
     return trimmed ? trimmed : null;
   }
 }

@@ -1,0 +1,37 @@
+<section class="advanced-stats">
+  <header class="advanced-stats__header">
+    <div>
+      <h2>Estadisticas avanzadas</h2>
+      <p>Resumen extendido calculado con los productos cargados en el panel.</p>
+    </div>
+  </header>
+
+  <div class="advanced-stats__grid">
+    <article class="stat-card">
+      <span>Promedio de stock</span>
+      <strong>{{ stats().averageStock | number: '1.0-2' }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <span>Productos bajo minimo</span>
+      <strong>{{ stats().belowMinimumStockCount }}</strong>
+    </article>
+
+    <article class="stat-card stat-card--wide">
+      <span>Producto de mayor valor</span>
+      <ng-container *ngIf="stats().highestValueProduct as product; else noTopProduct">
+        <strong>{{ product.name }}</strong>
+        <small>{{ product.sku }} | {{ stats().highestValue | currency: 'USD':'symbol':'1.2-2' }}</small>
+      </ng-container>
+
+      <ng-template #noTopProduct>
+        <strong>Sin datos suficientes</strong>
+      </ng-template>
+    </article>
+
+    <article class="stat-card">
+      <span>Total de inventario</span>
+      <strong>{{ stats().totalInventoryValue | currency: 'USD':'symbol':'1.2-2' }}</strong>
+    </article>
+  </div>
+</section>
