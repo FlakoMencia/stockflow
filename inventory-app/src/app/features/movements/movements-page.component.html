@@ -1,0 +1,81 @@
+<section class="movements">
+  <header class="movements__header">
+    <div>
+      <h1>Movimientos</h1>
+      <p>Registre los movimientos de inventario y mantenga sincronizados los niveles de existencias.</p>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="refreshProducts()" [disabled]="submitting || store.loading()">
+      Refrescar products
+    </button>
+  </header>
+
+  <div class="state state--loading" *ngIf="store.loading() && !submitting">
+    Cargando productos por sección...
+  </div>
+
+  <div class="state state--loading" *ngIf="submitting">
+    Registrando movimiento...
+  </div>
+
+  <div class="state state--error" *ngIf="store.activeError() as loadError">
+    <strong>{{ loadError.error }}</strong>
+    <span>{{ loadError.message }}</span>
+  </div>
+
+  <div class="state state--error" *ngIf="errorMessage">
+    <strong>Movimiento NO pudo registrarse</strong>
+    <span>{{ errorMessage }}</span>
+  </div>
+
+  <div class="state state--success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="state state--empty" *ngIf="!store.loading() && !store.activeError() && !errorMessage && store.products().length === 0">
+      Aún no hay productos disponibles. Por favor, cargue productos antes de registrar movimientos.
+  </div>
+
+  <form class="movement-form" [formGroup]="movementForm" (ngSubmit)="registerMovement()">
+    <div class="field">
+      <label for="productId">Productos</label>
+      <select id="productId" formControlName="productId">
+        <option [ngValue]="null" disabled>Seleccione producto</option>
+        <option *ngFor="let product of store.products(); trackBy: trackByProduct" [ngValue]="product.id">
+          {{ product.sku }} - {{ product.name }}
+        </option>
+      </select>
+      <small class="field-error" *ngIf="hasError('productId', 'required')">Producto es requerido.</small>
+    </div>
+
+    <div class="field">
+      <label for="type">Type</label>
+      <select id="type" formControlName="type">
+        <option [ngValue]="null" disabled>Seleccione un tipo de movimiento</option>
+        <option *ngFor="let type of movementTypes; trackBy: trackByMovementType" [ngValue]="type">
+          {{ type }}
+        </option>
+      </select>
+      <small class="field-error" *ngIf="hasError('type', 'required')">Tipo de movimiento es ultra requerido</small>
+    </div>
+
+    <div class="field">
+      <label for="quantity">Quantity</label>
+      <input id="quantity" type="number" min="1" step="1" formControlName="quantity" />
+      <small class="field-error" *ngIf="hasError('quantity', 'required')">Cantidad es requerido.</small>
+      <small class="field-error" *ngIf="hasError('quantity', 'min')">Tiene que ser al menos uno sino pa que.</small>
+    </div>
+
+    <div class="field field--full">
+      <label for="reason">Reason</label>
+      <textarea id="reason" rows="4" formControlName="reason" placeholder="Describa el por que la razon aun que no le creamos"></textarea>
+      <small class="field-error" *ngIf="hasError('reason', 'required')">Razon es requerida.</small>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="submit-button" [disabled]="submitting || store.loading()">
+        {{ submitting ? 'Registrando...' : 'Register movement' }}
+      </button>
+    </div>
+  </form>
+</section>

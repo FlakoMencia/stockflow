@@ -1,18 +1,18 @@
 <section class="products">
   <header class="products__header">
     <div>
-      <h1>Products</h1>
-      <p>Browse inventory by category and page through the list.</p>
+      <h1>Productos</h1>
+      <p> Para explorar inventario por categoría y la lista página por página.</p>
     </div>
 
     <button type="button" class="refresh-button" (click)="store.loadProducts(currentPage, pageSize, store.activeCategoryFilter() ?? undefined)">
-      Refresh
+      Refrescar
     </button>
   </header>
 
   <section class="filter-bar" aria-label="Category filter">
     <label class="filter-bar__field">
-      <span>Category</span>
+      <span>Categoria</span>
       <input
         type="text"
         [value]="categoryDraft"
@@ -22,13 +22,13 @@
     </label>
 
     <div class="filter-bar__actions">
-      <button type="button" class="secondary-button" (click)="applyCategoryFilter()">Apply filter</button>
-      <button type="button" class="secondary-button" (click)="clearCategoryFilter()">Clear</button>
+      <button type="button" class="secondary-button" (click)="applyCategoryFilter()">Aplicar filtro</button>
+      <button type="button" class="secondary-button" (click)="clearCategoryFilter()">Limpiar</button>
     </div>
   </section>
 
   <div class="state state--loading" *ngIf="store.loading()">
-    Loading products...
+    Cargando productos...
   </div>
 
   <div class="state state--error" *ngIf="store.activeError() as error">
@@ -37,7 +37,7 @@
   </div>
 
   <div class="state state--empty" *ngIf="!store.loading() && !store.activeError() && store.products().length === 0">
-    No products found for the current filter.
+    No se encontraron productos con ese filtro.
   </div>
 
   <div class="table-wrap" *ngIf="store.products().length > 0">
@@ -45,12 +45,12 @@
       <thead>
         <tr>
           <th>SKU</th>
-          <th>Name</th>
-          <th>Category</th>
-          <th>Current stock</th>
-          <th>Minimum stock</th>
-          <th>Unit price</th>
-          <th>Status</th>
+          <th>Nombre</th>
+          <th>Categoria</th>
+          <th>Stock Actual</th>
+          <th>Stock Minimo</th>
+          <th>Precio unitario</th>
+          <th>Estado</th>
         </tr>
       </thead>
 
@@ -80,8 +80,8 @@
   </div>
 
   <footer class="pager">
-    <button type="button" class="secondary-button" (click)="previousPage()" [disabled]="!canGoPrevious">Previous</button>
+    <button type="button" class="secondary-button" (click)="previousPage()" [disabled]="!canGoPrevious">Atras</button>
     <span>Page {{ currentPageLabel }}</span>
-    <button type="button" class="secondary-button" (click)="nextPage()" [disabled]="!canGoNext">Next</button>
+    <button type="button" class="secondary-button" (click)="nextPage()" [disabled]="!canGoNext">Siguiente</button>
   </footer>
 </section>

@@ -1,12 +1,13 @@
 :host {
   display: block;
-  padding: 1.5rem;
 }
 
 .dashboard {
   display: grid;
-  gap: 1.25rem;
+  gap: 1rem;
   color: #102033;
+  max-width: 1280px;
+  margin: 0 auto;
 }
 
 .dashboard__header,
@@ -35,6 +36,7 @@
   border-radius: 0.5rem;
   padding: 0.65rem 1rem;
   cursor: pointer;
+  box-shadow: 0 1px 2px rgba(16, 32, 51, 0.04);
 }
 
 .state {
@@ -68,6 +70,7 @@
   background: #ffffff;
   display: grid;
   gap: 0.5rem;
+  box-shadow: 0 1px 2px rgba(16, 32, 51, 0.04);
 }
 
 .kpi-card span,
@@ -88,6 +91,7 @@
   padding: 1rem;
   display: grid;
   gap: 1rem;
+  box-shadow: 0 1px 2px rgba(16, 32, 51, 0.04);
 }
 
 .product-list {
@@ -99,7 +103,7 @@
 }
 
 .product-row {
-  padding: 0.75rem 0;
+  padding: 0.85rem 0;
   border-top: 1px solid #eef2f6;
 }
 
@@ -137,10 +141,6 @@
 }
 
 @media (max-width: 560px) {
-  :host {
-    padding: 1rem;
-  }
-
   .kpi-grid {
     grid-template-columns: 1fr;
   }

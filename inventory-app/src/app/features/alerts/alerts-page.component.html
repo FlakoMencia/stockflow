@@ -1,0 +1,55 @@
+<section class="alerts">
+  <header class="alerts__header">
+    <div>
+      <h1>Alertas</h1>
+      <p>Productos que se encuentran en el umbral mínimo de existencias.</p>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="store.loadAlerts()">Refrezcar</button>
+  </header>
+
+  <div class="state state--loading" *ngIf="store.loading()">
+    Cargando alertas...
+  </div>
+
+  <div class="state state--error" *ngIf="store.activeError() as error">
+    <strong>{{ error.error }}</strong>
+    <span>{{ error.message }}</span>
+  </div>
+
+  <div class="state state--empty" *ngIf="!store.loading() && !store.activeError() && store.activeAlerts().length === 0">
+    No active alerts at the moment.
+  </div>
+
+  <div class="table-wrap" *ngIf="store.activeAlerts().length > 0">
+    <table class="alerts-table">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Producto</th>
+          <th>Stock</th>
+          <th>Stock minimo</th>
+          <th>Gravedad</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let alert of store.activeAlerts()">
+          <td>{{ alert.productSku || 'N/A' }}</td>
+          <td>{{ alert.productName }}</td>
+          <td>{{ alert.currentStock }}</td>
+          <td>{{ alert.minimumStock }}</td>
+          <td>
+            <span
+              class="badge"
+              [class.badge--critical]="alert.severity === 'CRITICAL'"
+              [class.badge--low]="alert.severity === 'LOW'"
+            >
+              {{ alert.severity }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
