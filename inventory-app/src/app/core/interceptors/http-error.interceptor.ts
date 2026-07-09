@@ -3,8 +3,14 @@ import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { ToastService } from '../services/toast.service';
 
+const SERVICE_UNAVAILABLE_MESSAGE = 'Inventory service no se encuentra disponible, favor intente mas tarde o informenos en la mesa de trabajo.';
+
 function extractErrorMessage(error: unknown): string {
   if (error instanceof HttpErrorResponse) {
+    if (error.status === 0) {
+      return SERVICE_UNAVAILABLE_MESSAGE;
+    }
+
     const payload = error.error;
 
     if (typeof payload === 'string' && payload.trim().length > 0) {
@@ -21,6 +27,10 @@ function extractErrorMessage(error: unknown): string {
     if (typeof error.message === 'string' && error.message.trim().length > 0) {
       return error.message;
     }
+  }
+
+  if (error instanceof TypeError && error.message.trim().length === 0) {
+    return SERVICE_UNAVAILABLE_MESSAGE;
   }
 
   if (error instanceof Error && error.message.trim().length > 0) {

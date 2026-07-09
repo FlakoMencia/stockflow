@@ -11,6 +11,8 @@ import { Product } from '../models/product.model';
 import { StockAlert } from '../models/stock-alert.model';
 import { ToastService } from '../services/toast.service';
 
+const SERVICE_UNAVAILABLE_MESSAGE = 'Inventory service is currently unavailable. Please try again later.';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -176,6 +178,16 @@ export class InventoryStore {
 
   private toErrorResponse(error: unknown, path: string): ErrorResponse {
     if (error instanceof HttpErrorResponse) {
+      if (error.status === 0) {
+        return {
+          timestamp: new Date().toISOString(),
+          status: 503,
+          error: 'Service Unavailable',
+          message: SERVICE_UNAVAILABLE_MESSAGE,
+          path
+        };
+      }
+
       const message =
         typeof error.error === 'string'
           ? error.error
