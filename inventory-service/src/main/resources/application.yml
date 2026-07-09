@@ -12,7 +12,7 @@ spring:
       minimum-idle: 5            # Keeps a few ready connections available.
       connection-timeout: 30000  # Wait up to 30s for a connection.
       idle-timeout: 600000       # Close idle connections after 10 minutes.
-
+  
   h2:
     console:
       enabled: true
@@ -34,11 +34,18 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,metrics,info
   endpoint:
     health:
       probes:
         enabled: true
+  info:
+    env:
+      enabled: true
+    app:
+      name: StockFlow Inventory Service
+      version: 1.0.0
+      description: Inventory monitoring backend service for evaluation of Mario Mencia
 
 springdoc:
   api-docs:

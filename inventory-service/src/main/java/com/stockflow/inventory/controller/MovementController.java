@@ -4,6 +4,9 @@ import com.stockflow.inventory.dto.request.MovementRequest;
 import com.stockflow.inventory.dto.response.MovementResponse;
 import com.stockflow.inventory.service.MovementService;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -28,12 +31,24 @@ public class MovementController {
     }
 
     @PostMapping
+    @Operation(summary = "Register movement", description = "Registers an inventory movement and updates product stock in one transaction. (Registra un movimiento de inventario y actualiza las existencias del producto en una sola transacción)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Movement created successfully"),
+            @ApiResponse(responseCode = "400", description = "Validation error"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "422", description = "Insufficient stock")
+    })
     public ResponseEntity<MovementResponse> registerMovement(@Valid @RequestBody MovementRequest request) {
         MovementResponse response = movementService.registerMovement(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{productId}/history")
+    @Operation(summary = "Get movement history", description = "Returns the movement history for a product. (Devuelve el historial de movimientos de un producto)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Movement history retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
     public ResponseEntity<List<MovementResponse>> getMovementHistory(
             @PathVariable Long productId,
             @PageableDefault(size = 10) Pageable pageable

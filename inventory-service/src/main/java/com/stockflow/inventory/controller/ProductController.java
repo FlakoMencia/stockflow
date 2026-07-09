@@ -2,6 +2,9 @@ package com.stockflow.inventory.controller;
 
 import com.stockflow.inventory.dto.response.ProductResponse;
 import com.stockflow.inventory.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -23,6 +26,10 @@ public class ProductController {
     }
 
     @GetMapping
+    @Operation(summary = "List products", description = "Returns paginated products with an optional category filter. (Devuelve productos paginados con un filtro de categoría opcional)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
+    })
     public ResponseEntity<Page<ProductResponse>> getProducts(
             @RequestParam(required = false) String category,
             @PageableDefault(size = 10) Pageable pageable
@@ -35,6 +42,11 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get product by id", description = "Returns a single product by its identifier. (Devuelve un único producto mediante su identificador)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Product retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found")
+    })
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
