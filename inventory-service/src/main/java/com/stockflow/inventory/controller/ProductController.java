@@ -1,5 +1,6 @@
 package com.stockflow.inventory.controller;
 
+import com.stockflow.inventory.dto.response.PageResponse;
 import com.stockflow.inventory.dto.response.ProductResponse;
 import com.stockflow.inventory.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class ProductController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
     })
-    public ResponseEntity<Page<ProductResponse>> getProducts(
+    public ResponseEntity<PageResponse<ProductResponse>> getProduct(
             @RequestParam(required = false) String category,
             @PageableDefault(size = 10) Pageable pageable
     ) {
@@ -38,7 +39,7 @@ public class ProductController {
                 ? productService.getProductsByCategory(category, pageable)
                 : productService.getProducts(pageable);
 
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(PageResponse.from(products));
     }
 
     @GetMapping("/{id}")
