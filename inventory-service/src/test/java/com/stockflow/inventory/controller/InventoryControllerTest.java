@@ -60,7 +60,7 @@ class InventoryControllerTest {
         Page<ProductResponse> page = new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
         when(productService.getProducts(any(Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/api/v1/products")
+        mockMvc.perform(get("/products")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
@@ -73,7 +73,7 @@ class InventoryControllerTest {
         Page<ProductResponse> page = new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
         when(productService.getProductsByCategory(eq("Electronics"), any(Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/api/v1/products")
+        mockMvc.perform(get("/products")
                         .param("category", "Electronics")
                         .param("page", "0")
                         .param("size", "10"))
@@ -87,7 +87,7 @@ class InventoryControllerTest {
     void getProductById_returnsProduct() throws Exception {
         when(productService.getProductById(1L)).thenReturn(productResponse(1L, "LAP-1", "Laptop", "Electronics"));
 
-        mockMvc.perform(get("/api/v1/products/1"))
+        mockMvc.perform(get("/products/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sku").value("LAP-1"));
     }
@@ -97,7 +97,7 @@ class InventoryControllerTest {
         MovementResponse response = movementResponse(1L, 1L, MovementType.IN, 5, 10, 15);
         when(movementService.registerMovement(any(MovementRequest.class))).thenReturn(response);
 
-        mockMvc.perform(post("/api/v1/movements")
+        mockMvc.perform(post("/movements")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -117,7 +117,7 @@ class InventoryControllerTest {
         AlertResponse alert = alertResponse(10L, "TON-1", "Toner", 0, 6, AlertSeverity.CRITICAL);
         when(alertService.getStockAlerts()).thenReturn(List.of(alert));
 
-        mockMvc.perform(get("/api/v1/alerts"))
+        mockMvc.perform(get("/alerts"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].severity").value("CRITICAL"));
     }
@@ -129,7 +129,7 @@ class InventoryControllerTest {
                 new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1)
         );
 
-        mockMvc.perform(get("/api/v1/movements/1/history")
+        mockMvc.perform(get("/movements/1/history")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
@@ -140,11 +140,11 @@ class InventoryControllerTest {
     void getProductById_whenMissing_returns404() throws Exception {
         when(productService.getProductById(99L)).thenThrow(new ProductNotFoundException(99L));
 
-        mockMvc.perform(get("/api/v1/products/99"))
+        mockMvc.perform(get("/products/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Not Found"))
-                .andExpect(jsonPath("$.path").value("/api/v1/products/99"));
+                .andExpect(jsonPath("$.path").value("/products/99"));
     }
 
     @Test
@@ -152,7 +152,7 @@ class InventoryControllerTest {
         when(movementService.registerMovement(any(MovementRequest.class)))
                 .thenThrow(new InsufficientStockException(1L, 50, 5));
 
-        mockMvc.perform(post("/api/v1/movements")
+        mockMvc.perform(post("/movements")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -169,12 +169,12 @@ class InventoryControllerTest {
 
     @Test
     void postMovement_whenInvalid_returns400() throws Exception {
-        mockMvc.perform(post("/api/v1/movements")
+        mockMvc.perform(post("/movements")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.path").value("/api/v1/movements"))
+                .andExpect(jsonPath("$.path").value("/movements"))
                 .andExpect(jsonPath("$.message", containsString("productId")));
     }
 
