@@ -1,0 +1,30 @@
+# https://help.github.com/articles/ignoring-files/
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Representation of runtime database / cache
+.angular
+
+# Dependencies
+/node_modules
+
+# Profiling data
+chrome-profiler-record.json
+
+# IDEs and editors
+/.idea
+/*.iml
+/*.ipr
+/*.iws
+.project
+.classpath
+.settings
+.vscode
+
+# System Files
+.DS_Store
+Thumbs.db
