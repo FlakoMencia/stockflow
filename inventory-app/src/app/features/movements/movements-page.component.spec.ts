@@ -110,14 +110,16 @@ describe('MovementsPageComponent', () => {
     });
   });
 
-  it('should show an error and finalize submitting state when movement registration fails', () => {
-    movementApiSpy.registerMovement.and.returnValue(
+    it('should show an error and finalize submitting state when movement registration fails', () => {
+      const insufficientStockMessage = 'Stock insuficiente para el producto 1. Solicitado: 50 unidades. Disponible: 5 unidades.';
+
+      movementApiSpy.registerMovement.and.returnValue(
       throwError(
         () =>
           new HttpErrorResponse({
             status: 422,
             statusText: 'Unprocessable Entity',
-            error: { message: 'Insufficient stock' }
+            error: { message: insufficientStockMessage }
           })
       )
     );
@@ -127,7 +129,7 @@ describe('MovementsPageComponent', () => {
     fixture.detectChanges();
 
     expect(component.submitting).toBeFalse();
-    expect(component.errorMessage).toBe('Insufficient stock');
+    expect(component.errorMessage).toBe(insufficientStockMessage);
     expect(component.successMessage).toBe('');
   });
 
