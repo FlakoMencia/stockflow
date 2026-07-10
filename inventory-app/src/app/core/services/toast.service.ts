@@ -15,7 +15,7 @@ export class ToastService {
   private static readonly DURATIONS: Record<ToastType, number> = {
     success: 8000,
     info: 8000,
-    error: 10000,
+    error: 20000,
     warning: 20000
   };
 
