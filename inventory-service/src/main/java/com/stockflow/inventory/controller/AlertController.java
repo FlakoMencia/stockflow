@@ -1,8 +1,12 @@
 package com.stockflow.inventory.controller;
 
 import com.stockflow.inventory.dto.response.AlertResponse;
+import com.stockflow.inventory.dto.response.ErrorResponse;
 import com.stockflow.inventory.service.AlertService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +27,21 @@ public class AlertController {
     }
 
     @GetMapping
-    @Operation(summary = "Get stock alerts", description = "Returns products that are at or below the minimum stock threshold. (Devuelve los productos que se encuentran en el umbral mínimo de existencias o por debajo de este)")
+    @Operation(
+            summary = "Get stock alerts",
+            description = "Returns the products whose stock is at or below the configured minimum threshold. (Devuelve los productos que se encuentran en el umbral mínimo de existencias o por debajo de este)"
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Alerts retrieved successfully")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Alerts retrieved successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = AlertResponse.class)))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
     })
     public ResponseEntity<List<AlertResponse>> getStockAlerts() {
         return ResponseEntity.ok(alertService.getStockAlerts());

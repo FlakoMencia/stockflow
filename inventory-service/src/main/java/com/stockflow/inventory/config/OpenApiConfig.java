@@ -17,13 +17,15 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Welcome to StockFlow Inventory API (Evaluation for Mario Mencia)")
                         .version("1.0.0")
-                        .description("Inventory monitoring backend service by Mario Mencia")
+                        .description("Inventory monitoring backend service for managing products, movements, alerts, and stock health. By Mario Mencia")
                         .contact(new Contact()
                                 .name("StockFlow Team")
-                                .email("mario_mencia@stockflow.com"))
+                                .email("support@stockflow.com"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0")))
-                .addServersItem(new Server().url("/"));
+                .addServersItem(new Server()
+                        .url("/")
+                        .description("Default server relative to the application context path"));
     }
 }

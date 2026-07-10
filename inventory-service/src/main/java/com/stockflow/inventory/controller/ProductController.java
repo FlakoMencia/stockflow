@@ -1,9 +1,12 @@
 package com.stockflow.inventory.controller;
 
+import com.stockflow.inventory.dto.response.ErrorResponse;
 import com.stockflow.inventory.dto.response.PageResponse;
 import com.stockflow.inventory.dto.response.ProductResponse;
 import com.stockflow.inventory.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
@@ -27,9 +30,21 @@ public class ProductController {
     }
 
     @GetMapping
-    @Operation(summary = "List products", description = "Returns paginated products with an optional category filter. (Devuelve productos paginados con un filtro de categoría opcional)")
+    @Operation(
+            summary = "List products",
+            description = "Returns a paginated list of products with an optional category filter. (Devuelve productos paginados con un filtro de categoría opcional)"
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Products retrieved successfully")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Products retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = PageResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
     })
     public ResponseEntity<PageResponse<ProductResponse>> getProduct(
             @RequestParam(required = false) String category,
@@ -43,10 +58,26 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get product by id", description = "Returns a single product by its identifier. (Devuelve un único producto mediante su identificador)")
+    @Operation(
+            summary = "Get product by id",
+            description = "Returns a single product by its identifier.(Devuelve un único producto mediante su identificador)"
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Product retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Product retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = ProductResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Product not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
     })
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));

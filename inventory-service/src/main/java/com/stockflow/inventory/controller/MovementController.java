@@ -1,12 +1,16 @@
 package com.stockflow.inventory.controller;
 
 import com.stockflow.inventory.dto.request.MovementRequest;
+import com.stockflow.inventory.dto.response.ErrorResponse;
 import com.stockflow.inventory.dto.response.MovementResponse;
 import com.stockflow.inventory.service.MovementService;
-import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -31,12 +35,36 @@ public class MovementController {
     }
 
     @PostMapping
-    @Operation(summary = "Register movement", description = "Registers an inventory movement and updates product stock in one transaction. (Registra un movimiento de inventario y actualiza las existencias del producto en una sola transacción)")
+    @Operation(
+            summary = "Register movement",
+            description = "Registers an inventory movement and updates product stock in one transaction.(Registra un movimiento de inventario y actualiza las existencias del producto en una sola transacción)"
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Movement created successfully"),
-            @ApiResponse(responseCode = "400", description = "Validation error"),
-            @ApiResponse(responseCode = "404", description = "Product not found"),
-            @ApiResponse(responseCode = "422", description = "Insufficient stock")
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Movement created successfully",
+                    content = @Content(schema = @Schema(implementation = MovementResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Validation error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Product not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "422",
+                    description = "Insufficient stock",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
     })
     public ResponseEntity<MovementResponse> registerMovement(@Valid @RequestBody MovementRequest request) {
         MovementResponse response = movementService.registerMovement(request);
@@ -44,10 +72,31 @@ public class MovementController {
     }
 
     @GetMapping("/{productId}/history")
-    @Operation(summary = "Get movement history", description = "Returns the movement history for a product. (Devuelve el historial de movimientos de un producto)")
+    @Operation(
+            summary = "Get movement history",
+            description = "Returns the movement history for a product.(Devuelve el historial de movimientos de un producto)"
+    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Movement history retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Product not found")
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Movement history retrieved successfully",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = MovementResponse.class)))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Product not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "429",
+                    description = "Too many requests",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server error",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+            )
     })
     public ResponseEntity<List<MovementResponse>> getMovementHistory(
             @PathVariable Long productId,
