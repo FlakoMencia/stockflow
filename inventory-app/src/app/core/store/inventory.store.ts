@@ -58,28 +58,34 @@ export class InventoryStore {
       localStorage.setItem(this.categoryFilterStorageKey, category);
     });
 
-    effect(() => {
-      const alerts = this.activeAlerts();
-      const currentCount = alerts.length;
+    effect(
+        () => {
+          const alerts = this.activeAlerts();
+          const currentCount = alerts.length;
 
-      if (!this.alertsEffectInitialized) {
-        this.alertsEffectInitialized = true;
-        this.lastAlertToastCount = currentCount;
-        return;
-      }
+          if (!this.alertsEffectInitialized) {
+            this.alertsEffectInitialized = true;
+            this.lastAlertToastCount = currentCount;
+            return;
+          }
 
-      if (currentCount === 0) {
-        this.lastAlertToastCount = 0;
-        return;
-      }
+          if (currentCount === 0) {
+            this.lastAlertToastCount = 0;
+            return;
+          }
 
-      if (this.lastAlertToastCount === currentCount) {
-        return;
-      }
+          if (this.lastAlertToastCount === currentCount) {
+            return;
+          }
 
-      this.lastAlertToastCount = currentCount;
-      this.toastService.warning(`Tienes ${currentCount} alertas activas de inventario.`);
-    });
+          this.lastAlertToastCount = currentCount;
+
+          this.toastService.warning(
+              `Tienes ${currentCount} alertas activas de inventario.`
+          );
+        },
+        { allowSignalWrites: true }
+    );
   }
 
   loadProducts(page = 0, size = 10, category?: string): void {
