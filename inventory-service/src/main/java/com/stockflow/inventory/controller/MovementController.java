@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/movements")
+@RequestMapping(value = "/movements", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MovementController {
 
     private final MovementService movementService;
@@ -34,7 +35,7 @@ public class MovementController {
         this.movementService = movementService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Register movement",
             description = "Registers an inventory movement and updates product stock in one transaction.(Registra un movimiento de inventario y actualiza las existencias del producto en una sola transacción)"
@@ -43,27 +44,32 @@ public class MovementController {
             @ApiResponse(
                     responseCode = "201",
                     description = "Movement created successfully",
-                    content = @Content(schema = @Schema(implementation = MovementResponse.class))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = MovementResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Validation error",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Product not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "422",
                     description = "Insufficient stock",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Unexpected server error",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     public ResponseEntity<MovementResponse> registerMovement(@Valid @RequestBody MovementRequest request) {
@@ -80,22 +86,26 @@ public class MovementController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Movement history retrieved successfully",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = MovementResponse.class)))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(implementation = MovementResponse.class)))
             ),
             @ApiResponse(
                     responseCode = "404",
                     description = "Product not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "429",
                     description = "Too many requests",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             ),
             @ApiResponse(
                     responseCode = "500",
                     description = "Unexpected server error",
-                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     public ResponseEntity<List<MovementResponse>> getMovementHistory(
