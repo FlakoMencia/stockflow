@@ -48,10 +48,11 @@ management:
   info:
     env:
       enabled: true
-    app:
-      name: StockFlow Inventory Service
-      version: 1.0.0
-      description: Inventory monitoring backend service for evaluation of Mario Mencia
+info:
+  app:
+    name: StockFlow Inventory Service
+    version: 1.0.0
+    description:  Inventory monitoring backend service for evaluation of Mario Mencia
 
 springdoc:
   api-docs:
