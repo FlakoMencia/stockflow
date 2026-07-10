@@ -164,7 +164,8 @@ class InventoryControllerTest {
                                 """))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.status").value(422))
-                .andExpect(jsonPath("$.error").value("Unprocessable Entity"));
+                .andExpect(jsonPath("$.error").value("Unprocessable Entity"))
+                .andExpect(jsonPath("$.message").value("Stock insuficiente para el producto 1. Solicitado: 50 unidades. Disponible: 5 unidades."));
     }
 
     @Test

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -110,7 +111,14 @@ class MovementServiceImplTest {
 
         when(productRepository.findById(3L)).thenReturn(Optional.of(product));
 
-        assertThrows(InsufficientStockException.class, () -> movementService.registerMovement(request));
+        InsufficientStockException exception = assertThrows(
+                InsufficientStockException.class,
+                () -> movementService.registerMovement(request)
+        );
+
+        assertTrue(exception.getMessage().contains("Stock insuficiente"));
+        assertTrue(exception.getMessage().contains("Solicitado: 5 unidades."));
+        assertTrue(exception.getMessage().contains("Disponible: 2 unidades."));
 
         verify(productRepository, never()).save(any(Product.class));
         verify(movementRepository, never()).save(any(Movement.class));

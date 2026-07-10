@@ -3,9 +3,9 @@ package com.stockflow.inventory.controller;
 import com.stockflow.inventory.dto.request.MovementRequest;
 import com.stockflow.inventory.dto.response.ErrorResponse;
 import com.stockflow.inventory.dto.response.MovementResponse;
+import com.stockflow.inventory.dto.response.PageResponse;
 import com.stockflow.inventory.service.MovementService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/movements", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,7 +85,7 @@ public class MovementController {
                     responseCode = "200",
                     description = "Movement history retrieved successfully",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = MovementResponse.class)))
+                            schema = @Schema(implementation = PageResponse.class))
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -108,13 +106,10 @@ public class MovementController {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    public ResponseEntity<List<MovementResponse>> getMovementHistory(
+    public ResponseEntity<PageResponse<MovementResponse>> getMovementHistory(
             @PathVariable Long productId,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        List<MovementResponse> history = movementService.getMovementHistory(productId, pageable)
-                .getContent();
-
-        return ResponseEntity.ok(history);
+        return ResponseEntity.ok(PageResponse.from(movementService.getMovementHistory(productId, pageable)));
     }
 }
