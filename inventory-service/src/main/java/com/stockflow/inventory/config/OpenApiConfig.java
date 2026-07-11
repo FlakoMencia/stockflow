@@ -25,7 +25,7 @@ public class OpenApiConfig {
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0")))
                 .addServersItem(new Server()
-                        .url("/")
+                        .url("/api/v1")
                         .description("Default server relative to the application context path"));
     }
 }

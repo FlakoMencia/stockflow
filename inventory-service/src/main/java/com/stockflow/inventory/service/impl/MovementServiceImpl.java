@@ -2,6 +2,7 @@ package com.stockflow.inventory.service.impl;
 
 import com.stockflow.inventory.dto.request.MovementRequest;
 import com.stockflow.inventory.dto.response.MovementResponse;
+import com.stockflow.inventory.dto.response.PageResponse;
 import com.stockflow.inventory.entity.Movement;
 import com.stockflow.inventory.entity.Product;
 import com.stockflow.inventory.enums.MovementType;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class MovementServiceImpl implements MovementService {
@@ -72,8 +75,9 @@ public class MovementServiceImpl implements MovementService {
             throw new ProductNotFoundException(productId);
         }
 
-        return movementRepository.findByProductIdOrderByOccurredAtDesc(productId, pageable)
+        Page<MovementResponse> mov = movementRepository.findByProductIdOrderByOccurredAtDesc(productId, pageable)
                 .map(movementMapper::toResponse);
+        return mov;
     }
 
     private void validateQuantity(Integer quantity) {

@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(value = "/movements", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MovementController {
@@ -106,10 +108,13 @@ public class MovementController {
                             schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    public ResponseEntity<PageResponse<MovementResponse>> getMovementHistory(
+    public ResponseEntity<List<MovementResponse>> getMovementHistory(
             @PathVariable Long productId,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        return ResponseEntity.ok(PageResponse.from(movementService.getMovementHistory(productId, pageable)));
+        List<MovementResponse> history = movementService.getMovementHistory(productId, pageable)
+                .getContent();
+
+        return ResponseEntity.ok(history);
     }
 }
